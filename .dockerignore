@@ -1,0 +1,4 @@
+.git/*
+Dockerfile
+.stack_work/*
+dist
