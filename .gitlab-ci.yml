@@ -16,7 +16,7 @@ before_script:
   - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
   - apk update
   - apk add git
-  - git checkout master stack.yaml website.cabal
+  - git checkout master stack.yaml discord-hs.cabal
 
 build:
   stage: build
