@@ -1,3 +1,3 @@
 FROM haskell
 COPY . .
-RUN stack build --only-dependencies
+RUN stack haddock --only-dependencies
