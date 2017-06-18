@@ -37,7 +37,7 @@ module Network.Discord.Gateway where
   runWebsocket (URL (Absolute h) path _) client inner = do
     rl <- newTVarIO []
     runSecureClient (host h) 443 (path++"/?v=6")
-      $ \conn -> evalStateT (runEffect inner)
+      $ \conn -> evalDiscordM (runEffect inner)
         (DiscordState Create client conn undefined rl)
   runWebsocket _ _ _ = mzero
 
@@ -47,7 +47,7 @@ module Network.Discord.Gateway where
     seqNum <- atomically $ readTMVar sq
     sendTextData conn $ Heartbeat seqNum
     threadDelay $ interval * 1000
-  
+
   -- | Turn a websocket data source into an 'Event' data
   --   source
   makeEvents :: Pipe Payload Event DiscordM a
@@ -89,8 +89,9 @@ module Network.Discord.Gateway where
             put st {getState=InvalidDead}
       InvalidReconnect -> put st {getState=InvalidDead}
       InvalidDead      -> liftIO $ errorM "Discord-hs.Gateway.Error" "BotDied"
-  
+
   -- | Utility function providing core functionality by converting a Websocket
   --   'Connection' to a stream of gateway 'Event's
   eventCore :: Connection -> Producer Event DiscordM ()
   eventCore conn = makeWebsocketSource conn >-> makeEvents
+
